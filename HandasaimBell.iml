@@ -8,5 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="youtube" level="project" />
+    <orderEntry type="library" name="json" level="project" />
+    <orderEntry type="library" name="okhttp" level="project" />
   </component>
 </module>
