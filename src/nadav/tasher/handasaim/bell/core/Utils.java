@@ -1,58 +1,44 @@
 package nadav.tasher.handasaim.bell.core;
 
-import okhttp3.*;
+import okhttp3.ConnectionSpec;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.nio.file.Files;
 import java.util.Arrays;
 
-public class Loader {
-    public static final String remoteSettings = "https://nockio.com/h/bell/main/settings.json";
-    public static final File localSettings = new File(System.getProperty("user.dir"), "settings.json");
-
-    public static void reloadSettings() {
-        new Download(remoteSettings, localSettings, new Download.Callback() {
-            @Override
-            public void onSuccess(File file) {
-                Settings.reload();
-                if(Settings.requeue()){
-                    download(Settings.queue());
-                }
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-            }
-        }).execute();
-    }
-
-    private static void download(ArrayList<String> queue){
-
-    }
-
-    public static void request(Request request, Callback callback) {
-        getHttpsClient().newCall(request).enqueue(callback);
-    }
-
-    public static OkHttpClient getHttpsClient() {
-        return new OkHttpClient.Builder().connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)).build();
-    }
-
-    public static OkHttpClient getHttpClient() {
-        return new OkHttpClient();
+public class Utils {
+    public static String readFile(File file) {
+        StringBuilder output = new StringBuilder();
+        try {
+            Files.lines(file.toPath()).forEach(s -> output.append(s).append('\n'));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return output.toString();
     }
 
     public static class Download {
         private String source;
         private File destination;
-        private Callback callback;
+        private Download.Callback callback;
         private Exception exception;
 
-        public Download(String source, File destination, Callback callback) {
+        public Download(String source, File destination, Download.Callback callback) {
             this.source = source;
             this.destination = destination;
             this.callback = callback;
+        }
+
+        public static OkHttpClient getHttpsClient() {
+            return new OkHttpClient.Builder().connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)).build();
+        }
+
+        public static OkHttpClient getHttpClient() {
+            return new OkHttpClient();
         }
 
         public void execute() {

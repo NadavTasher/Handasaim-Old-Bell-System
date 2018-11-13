@@ -12,7 +12,7 @@ public class Player {
 
     public static void play(int ring){
         try {
-            ringtone = new Media(Settings.getRing(ring).toURI().toString());
+            ringtone = new Media(Settings.getRingtone(ring).toURI().toString());
             mediaPlayer = new MediaPlayer(ringtone);
             mediaPlayer.play();
         }catch (Exception e){
