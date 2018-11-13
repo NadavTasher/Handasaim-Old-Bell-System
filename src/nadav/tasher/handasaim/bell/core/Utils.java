@@ -69,6 +69,7 @@ public class Utils {
                         }
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     exception = e;
                     onPost(false);
                 }

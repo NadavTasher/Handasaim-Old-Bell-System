@@ -9,6 +9,6 @@ public class Main {
     public static void main(String[] args) {
         Settings.reload();
         Player.init();
-        Player.play(0);
+//        Player.play(0);
     }
 }
