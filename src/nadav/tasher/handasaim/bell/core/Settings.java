@@ -4,14 +4,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 
 import static nadav.tasher.handasaim.bell.core.Utils.readFile;
 
 public class Settings {
-    public static final String QUEUE = "queue";
+    public static final String QUEUE = "queue", LINK = "link", TIME = "time";
+    private static final String ringtoneFileName = "Ringtone(XX).mp3";
     private static final File defaultRing = new File(Settings.class.getClassLoader().getResource("nadav/tasher/handasaim/bell/resources/default.mp3").getFile());
     private static final String remoteSettings = "https://nockio.com/h/bell/main/settings.json";
     private static final File homeDirectory = new File(System.getProperty("user.dir"));
@@ -19,20 +18,48 @@ public class Settings {
     private static final File ringDirectory = new File(homeDirectory, "ringtones");
     private static JSONObject lastSettings = null;
     private static JSONObject currentSettings = null;
+    private static ArrayList<Ringtone> queue = new ArrayList<>();
 
     public static void reload() {
         if (localSettings.exists()) {
-            currentSettings = new JSONObject(readFile(localSettings));
+            load();
         }
         if (!ringDirectory.exists()) ringDirectory.mkdirs();
         downloadRemote();
     }
 
-    private static void downloadQueue(ArrayList<String> newQueue) {
+    private static ArrayList<Ringtone> queueForSettings(JSONObject settings) {
+        ArrayList<Ringtone> ringtones = new ArrayList<>();
+        if (settings != null) {
+            if (settings.has(QUEUE)) {
+                JSONArray queue = settings.getJSONArray(QUEUE);
+                for (int ringtone = 0; ringtone < queue.length(); ringtone++) {
+                    Ringtone newRingtone = new Ringtone();
+                    try {
+                        JSONObject currentRingtone = queue.getJSONObject(ringtone);
+                        if (currentRingtone.has(LINK)) {
+                            newRingtone.setLink(currentRingtone.getString(LINK));
+                        }
+                        if (currentRingtone.has(TIME)) {
+                            newRingtone.setTime(currentRingtone.getNumber(TIME).doubleValue());
+                        }
+                    } catch (Exception ignored) {
+                    }
+                    newRingtone.setFile(new File(ringDirectory, ringtoneFileName.replace("XX", String.valueOf(ringtone))));
+                    ringtones.add(newRingtone);
+                }
+            }
+        }
+        return ringtones;
+    }
+
+    private static void downloadQueue(ArrayList<Ringtone> newQueue) {
         for (int s = 0; s < newQueue.size(); s++) {
+            // Check If Download Is Needed
             if (newQueue.get(s) != null) {
-                System.out.println("Downloading " + newQueue.get(s) + " into ring " + s);
-                new Utils.Download(newQueue.get(s), new File(ringDirectory, "ring" + s + ".mp3"), new Utils.Download.Callback() {
+                // Download
+                System.out.println("Downloading " + newQueue.get(s).getLink() + " into " + newQueue.get(s).getFile().getName());
+                new Utils.Download(newQueue.get(s).getLink(), newQueue.get(s).getFile(), new Utils.Download.Callback() {
                     @Override
                     public void onSuccess(File file) {
                         System.out.println("Done " + file.toString());
@@ -47,12 +74,14 @@ public class Settings {
         }
     }
 
-    public static File getRingtone(int index) {
-        File wannabeRingtone = new File(ringDirectory, "ring" + index + ".mp3");
-        if (wannabeRingtone.exists()) {
-            return wannabeRingtone;
-        }
-        return defaultRing;
+    public static Ringtone getRingtone(int index) {
+        if (index < queue.size()) return queue.get(index);
+        return new Ringtone().setFile(defaultRing).setLink(null).setTime(0);
+    }
+
+    public static void load() {
+        currentSettings = new JSONObject(readFile(localSettings));
+        queue = queueForSettings(currentSettings);
     }
 
     private static void downloadRemote() {
@@ -61,8 +90,8 @@ public class Settings {
             public void onSuccess(File file) {
                 lastSettings = currentSettings;
                 try {
-                    currentSettings = new JSONObject(readFile(file));
-                    ArrayList<String> compared = compareQueues(lastSettings, currentSettings);
+                    load();
+                    ArrayList<Ringtone> compared = compareQueues(queueForSettings(lastSettings), queueForSettings(currentSettings));
                     if (compared != null) {
                         downloadQueue(compared);
                     }
@@ -78,49 +107,24 @@ public class Settings {
         }).execute();
     }
 
-    private static ArrayList<String> compareQueues(JSONObject lastSettings, JSONObject currentSettings) {
+    private static ArrayList<Ringtone> compareQueues(ArrayList<Ringtone> last, ArrayList<Ringtone> current) {
         try {
-            if (currentSettings != null) {
-                if (currentSettings.has(QUEUE)) {
-                    ArrayList<String> currentQueue = new ArrayList<>();
-                    JSONArray currentArray = currentSettings.getJSONArray(QUEUE);
-                    for (int i = 0; i < currentArray.length(); i++) currentQueue.add(currentArray.getString(i));
-                    if (lastSettings != null) {
-                        if (lastSettings.has(QUEUE)) {
-                            ArrayList<String> lastQueue = new ArrayList<>();
-                            JSONArray lastArray = lastSettings.getJSONArray(QUEUE);
-                            for (int i = 0; i < lastArray.length(); i++) lastQueue.add(lastArray.getString(i));
-                            if (lastQueue.size() != currentQueue.size()) {
-                                return currentQueue;
-                            } else {
-                                for (int i = 0; i < currentQueue.size(); i++) {
-                                    if (currentQueue.get(i).equals(lastQueue.get(i))) currentQueue.set(i, null);
+            if (current != null) {
+                if (last != null) {
+                    if (current.size() == last.size()) {
+                        for (int index = 0; index < current.size(); index++) {
+                            if (current.get(index) != null) {
+                                if (current.get(index).equals(last.get(index))) {
+                                    current.set(index, null);
                                 }
-                                return currentQueue;
                             }
-                        }else{
-                            return currentQueue;
                         }
-                    } else {
-                        return currentQueue;
                     }
                 }
+                return current;
             }
         } catch (Exception ignored) {
         }
         return null;
-    }
-
-    private static void emptyRingtones() {
-        File[] list = ringDirectory.listFiles();
-        if (list != null) {
-            for (File file : list) {
-                try {
-                    Files.delete(file.toPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }

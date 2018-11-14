@@ -7,8 +7,10 @@ import nadav.tasher.handasaim.bell.core.Watch;
 public class Main {
 
     public static void main(String[] args) {
-        Settings.reload();
         Player.init();
-//        Player.play(0);
+        Settings.load();
+        Watch.initSettings();
+        Watch.initBell();
+        Player.play(0);
     }
 }

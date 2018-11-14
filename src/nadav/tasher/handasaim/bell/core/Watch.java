@@ -6,13 +6,12 @@ import java.util.TimerTask;
 import static nadav.tasher.handasaim.bell.core.Schedule.ring;
 
 public class Watch {
-
-    private static Timer timer=new Timer();
-    private static final int LOOP_TIME=20000;
+    private static final int LOOP_TIME_BELL=20000;
+    private static final int LOOP_TIME_SETTINGS=1200000;
     private static int lastRing=-1;
 
-    public static void init(){
-        timer.scheduleAtFixedRate(new TimerTask() {
+    public static void initBell(){
+        new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 try{
@@ -30,7 +29,16 @@ public class Watch {
                     e.printStackTrace();
                 }
             }
-        },0,LOOP_TIME);
+        },0,LOOP_TIME_BELL);
+    }
+
+    public static void initSettings(){
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Settings.reload();
+            }
+        },0,LOOP_TIME_SETTINGS);
     }
 
 }
