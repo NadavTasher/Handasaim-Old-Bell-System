@@ -11,6 +11,6 @@ public class Main {
         Settings.load();
         Watch.initSettings();
         Watch.initBell();
-        Player.play(0);
+        Player.play(1);
     }
 }

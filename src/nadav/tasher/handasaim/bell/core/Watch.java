@@ -6,7 +6,7 @@ import java.util.TimerTask;
 import static nadav.tasher.handasaim.bell.core.Schedule.ring;
 
 public class Watch {
-    private static final int LOOP_TIME_BELL=20000;
+    private static final int LOOP_TIME_BELL=10000;
     private static final int LOOP_TIME_SETTINGS=1200000;
     private static int lastRing=-1;
 
