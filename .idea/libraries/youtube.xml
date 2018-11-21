@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="youtube">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/youtube.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

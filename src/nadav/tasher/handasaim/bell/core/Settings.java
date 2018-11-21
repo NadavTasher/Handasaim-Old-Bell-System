@@ -58,11 +58,9 @@ public class Settings {
             // Check If Download Is Needed
             if (newQueue.get(s) != null) {
                 // Download
-                System.out.println("Downloading " + newQueue.get(s).getLink() + " into " + newQueue.get(s).getFile().getName());
                 new Utils.Download(newQueue.get(s).getLink(), newQueue.get(s).getFile(), new Utils.Download.Callback() {
                     @Override
                     public void onSuccess(File file) {
-                        System.out.println("Done " + file.toString());
                     }
 
                     @Override
@@ -75,13 +73,16 @@ public class Settings {
     }
 
     public static Ringtone getRingtone(int index) {
-        if (index < queue.size()) return queue.get(index);
+        if (index >= 0 && index < queue.size()) return queue.get(index);
         return new Ringtone().setFile(defaultRing).setLink(null).setTime(0);
     }
 
     public static void load() {
-        currentSettings = new JSONObject(readFile(localSettings));
-        queue = queueForSettings(currentSettings);
+        try {
+            currentSettings = new JSONObject(readFile(localSettings));
+            queue = queueForSettings(currentSettings);
+        } catch (Exception e) {
+        }
     }
 
     private static void downloadRemote() {
@@ -102,7 +103,6 @@ public class Settings {
 
             @Override
             public void onFailure(Exception e) {
-                e.printStackTrace();
             }
         }).execute();
     }

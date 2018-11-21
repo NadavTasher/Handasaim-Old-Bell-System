@@ -1,15 +1,36 @@
 package nadav.tasher.handasaim.bell;
 
-import nadav.tasher.handasaim.bell.core.Player;
+import nadav.tasher.handasaim.bell.core.Ringtone;
 import nadav.tasher.handasaim.bell.core.Settings;
-import nadav.tasher.handasaim.bell.core.Watch;
+
+import static nadav.tasher.handasaim.bell.core.Schedule.ring;
 
 public class Main {
 
+    public static final double VERSION=0.1;
+
     public static void main(String[] args) {
-        Player.init();
-        Settings.load();
-        Watch.initSettings();
-        Watch.initBell();
+        if(args.length>0) {
+            if(args[0].equals("get")) {
+                Settings.load();
+                String command="";
+                int ring=ring();
+                ring=1;
+                if(ring!=-1){
+                    Ringtone ringtone=Settings.getRingtone(ring);
+                    String timestamp="";
+                    int minute= (int) (ringtone.getTime()/60);
+                    double seconds=(ringtone.getTime()%60);
+                    timestamp="00:"+minute+":"+seconds;
+                    command="ffplay -ss "+timestamp+" -t 20 -i \""+ringtone.getFile().toString()+"\" -nodisp -autoexit";
+                }else{
+                    command="echo Not The Time Yet";
+                }
+                System.out.println(command);
+            }else{
+                Settings.reload();
+                System.out.println("echo Updated");
+            }
+        }
     }
 }
