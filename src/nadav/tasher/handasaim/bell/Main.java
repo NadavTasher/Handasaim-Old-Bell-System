@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         if(args.length>0) {
-            if(args[0].equals("get")) {
+            if(args[0].equals("play")) {
                 Settings.load();
                 String command="";
                 int ring=ring();
