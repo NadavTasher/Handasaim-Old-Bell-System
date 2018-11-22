@@ -15,6 +15,13 @@ public class Main {
                 Settings.load();
                 String command="";
                 int ring=ring();
+                if(args.length>1){
+                    try{
+                        ring=Integer.parseInt(args[1]);
+                    }catch (Exception ignored){
+
+                    }
+                }
                 if(ring!=-1){
                     Ringtone ringtone=Settings.getRingtone(ring);
                     String timestamp="";
