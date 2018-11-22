@@ -15,21 +15,22 @@ public class Main {
                 Settings.load();
                 String command="";
                 int ring=ring();
-                ring=1;
                 if(ring!=-1){
                     Ringtone ringtone=Settings.getRingtone(ring);
                     String timestamp="";
                     int minute= (int) (ringtone.getTime()/60);
                     double seconds=(ringtone.getTime()%60);
                     timestamp="00:"+minute+":"+seconds;
-                    command="ffplay -ss "+timestamp+" -t 20 -i \""+ringtone.getFile().toString()+"\" -nodisp -autoexit";
+                    command="ffplay -i "+ringtone.getFile().toString()+" -ss "+timestamp+" -t 20 -nodisp -autoexit";
                 }else{
                     command="echo Not The Time Yet";
                 }
-                System.out.println(command);
-            }else{
+                System.out.print(command);
+            }else if(args[0].equals("update")){
                 Settings.reload();
                 System.out.println("echo Updated");
+            }else{
+                System.out.println("echo Unknown Command.");
             }
         }
     }

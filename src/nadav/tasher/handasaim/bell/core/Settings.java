@@ -10,7 +10,7 @@ import static nadav.tasher.handasaim.bell.core.Utils.readFile;
 
 public class Settings {
     public static final String QUEUE = "queue", LINK = "link", TIME = "time";
-    private static final String ringtoneFileName = "Ringtone(XX).mp3";
+    private static final String ringtoneFileName = "RingtoneXX.mp3";
     private static final File defaultRing = new File(Settings.class.getClassLoader().getResource("nadav/tasher/handasaim/bell/resources/default.mp3").getFile());
     private static final String remoteSettings = "https://nockio.com/h/bell/main/settings.json";
     private static final File homeDirectory = new File(System.getProperty("user.dir"));
