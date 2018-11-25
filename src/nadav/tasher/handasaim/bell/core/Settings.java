@@ -25,7 +25,12 @@ public class Settings {
             load();
         }
         if (!ringDirectory.exists()) ringDirectory.mkdirs();
-        downloadRemote();
+        downloadRemote(false);
+    }
+
+    public static void forceReload(){
+        if (!ringDirectory.exists()) ringDirectory.mkdirs();
+        downloadRemote(true);
     }
 
     private static ArrayList<Ringtone> queueForSettings(JSONObject settings) {
@@ -85,16 +90,20 @@ public class Settings {
         }
     }
 
-    private static void downloadRemote() {
+    private static void downloadRemote(boolean force) {
         new Utils.Download(remoteSettings, localSettings, new Utils.Download.Callback() {
             @Override
             public void onSuccess(File file) {
                 lastSettings = currentSettings;
                 try {
-                    load();
-                    ArrayList<Ringtone> compared = compareQueues(queueForSettings(lastSettings), queueForSettings(currentSettings));
-                    if (compared != null) {
-                        downloadQueue(compared);
+                    if(!force) {
+                        load();
+                        ArrayList<Ringtone> compared = compareQueues(queueForSettings(lastSettings), queueForSettings(currentSettings));
+                        if (compared != null) {
+                            downloadQueue(compared);
+                        }
+                    }else {
+                        downloadQueue(queueForSettings(currentSettings));
                     }
                 } catch (Exception e) {
                     currentSettings = lastSettings;
