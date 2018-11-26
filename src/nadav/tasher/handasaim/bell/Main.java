@@ -28,7 +28,7 @@ public class Main {
                     int minute= (int) (ringtone.getTime()/60);
                     double seconds=(ringtone.getTime()%60);
                     timestamp="00:"+minute+":"+seconds;
-                    command="ffplay -i "+ringtone.getFile().toString()+" -ss "+timestamp+" -t 20 -v error -nodisp -autoexit";
+                    command="ffplay -i "+ringtone.getFile().toString()+" -ss "+timestamp+" -t 25 -v error -nodisp -autoexit";
                 }else{
                     command="echo Not The Time Yet";
                 }
