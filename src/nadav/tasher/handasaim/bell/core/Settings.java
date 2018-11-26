@@ -96,8 +96,8 @@ public class Settings {
             public void onSuccess(File file) {
                 lastSettings = currentSettings;
                 try {
+                    load();
                     if(!force) {
-                        load();
                         ArrayList<Ringtone> compared = compareQueues(queueForSettings(lastSettings), queueForSettings(currentSettings));
                         if (compared != null) {
                             downloadQueue(compared);
