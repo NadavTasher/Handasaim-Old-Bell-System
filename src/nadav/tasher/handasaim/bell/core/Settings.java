@@ -12,7 +12,7 @@ public class Settings {
     public static final String QUEUE = "queue", LINK = "link", TIME = "time";
     private static final String ringtoneFileName = "RingtoneXX.mp3";
     private static final File defaultRing = new File(Settings.class.getClassLoader().getResource("nadav/tasher/handasaim/bell/resources/default.mp3").getFile());
-    private static final String remoteSettings = "https://nockio.com/h/bell/main/settings.json";
+    private static final String remoteSettings = "https://nockio.com/h/bell/main/settings.json", remoteFolder = "https://nockio.com/h/bell/rings/";
     private static final File homeDirectory = new File(System.getProperty("user.dir"));
     private static final File localSettings = new File(homeDirectory, "settings.json");
     private static final File ringDirectory = new File(homeDirectory, "ringtones");
@@ -28,7 +28,7 @@ public class Settings {
         downloadRemote(false);
     }
 
-    public static void forceReload(){
+    public static void forceReload() {
         if (!ringDirectory.exists()) ringDirectory.mkdirs();
         downloadRemote(true);
     }
@@ -63,7 +63,7 @@ public class Settings {
             // Check If Download Is Needed
             if (newQueue.get(s) != null) {
                 // Download
-                new Utils.Download(newQueue.get(s).getLink(), newQueue.get(s).getFile(), new Utils.Download.Callback() {
+                new Utils.Download(remoteFolder + newQueue.get(s).getLink(), newQueue.get(s).getFile(), new Utils.Download.Callback() {
                     @Override
                     public void onSuccess(File file) {
                     }
@@ -82,6 +82,10 @@ public class Settings {
         return new Ringtone().setFile(defaultRing).setLink(null).setTime(0);
     }
 
+    public static int length() {
+        return currentSettings.optInt("length", 25);
+    }
+
     public static void load() {
         try {
             currentSettings = new JSONObject(readFile(localSettings));
@@ -97,12 +101,12 @@ public class Settings {
                 lastSettings = currentSettings;
                 try {
                     load();
-                    if(!force) {
+                    if (!force) {
                         ArrayList<Ringtone> compared = compareQueues(queueForSettings(lastSettings), queueForSettings(currentSettings));
                         if (compared != null) {
                             downloadQueue(compared);
                         }
-                    }else {
+                    } else {
                         downloadQueue(queueForSettings(currentSettings));
                     }
                 } catch (Exception e) {

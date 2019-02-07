@@ -37,19 +37,11 @@ public class Utils {
             return new OkHttpClient.Builder().connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)).build();
         }
 
-        public static OkHttpClient getHttpClient() {
-            return new OkHttpClient();
-        }
-
         public void execute() {
             new Thread(() -> {
                 try {
-                    Response response;
-                    if (source.startsWith("http://")) {
-                        response = getHttpClient().newCall(new Request.Builder().url(source).build()).execute();
-                    } else {
-                        response = getHttpsClient().newCall(new Request.Builder().url(source).build()).execute();
-                    }
+                    Response response = getHttpsClient().newCall(new Request.Builder().url(source).build()).execute();
+
                     if (response.code() != 200) {
                         exception = new Exception("The server responded with " + response.code());
                         if (response.body() != null) {
