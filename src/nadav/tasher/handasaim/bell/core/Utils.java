@@ -5,9 +5,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
+import java.security.MessageDigest;
 import java.util.Arrays;
 
 public class Utils {
@@ -19,6 +21,16 @@ public class Utils {
             e.printStackTrace();
         }
         return output.toString();
+    }
+
+    public static String md5(File file) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(readFile(file).getBytes());
+            return DatatypeConverter.printHexBinary(md.digest()).toUpperCase();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static class Download {
@@ -41,7 +53,6 @@ public class Utils {
             new Thread(() -> {
                 try {
                     Response response = getHttpsClient().newCall(new Request.Builder().url(source).build()).execute();
-
                     if (response.code() != 200) {
                         exception = new Exception("The server responded with " + response.code());
                         if (response.body() != null) {

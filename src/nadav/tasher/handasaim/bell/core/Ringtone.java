@@ -1,13 +1,31 @@
 package nadav.tasher.handasaim.bell.core;
 
+import org.json.JSONObject;
+
 import java.io.File;
 
 public class Ringtone {
     private double time = 0;
     private File file = null;
     private String link = null;
+    private String md5 = null;
 
     public Ringtone() {
+    }
+
+    public Ringtone(JSONObject object) {
+        setTime(object.optDouble("time", 0));
+        setLink(object.optString("link", null));
+        setMD5(object.optString("md5", null));
+    }
+
+    public String getMD5() {
+        return md5;
+    }
+
+    public Ringtone setMD5(String md5) {
+        this.md5 = md5;
+        return this;
     }
 
     public double getTime() {
@@ -35,16 +53,5 @@ public class Ringtone {
     public Ringtone setLink(String link) {
         this.link = link;
         return this;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj != null) {
-            if (obj instanceof Ringtone) {
-                Ringtone compare = (Ringtone) obj;
-                return getFile().toString().equals(compare.getFile().toString()) && getLink().equals(compare.getLink());
-            }
-        }
-        return false;
     }
 }
