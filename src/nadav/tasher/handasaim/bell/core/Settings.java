@@ -46,8 +46,10 @@ public class Settings {
         ArrayList<Utils.Download> downloads = new ArrayList<>();
         for (Ringtone ringtone : queue) {
             String md5 = md5(ringtone.getFile());
-            if (md5 == null || !md5.equals(ringtone.getMD5().toUpperCase()))
+            if (md5 == null || !md5.toUpperCase().equals(ringtone.getMD5().toUpperCase())) {
+                System.out.println(ringtone.getLink());
                 downloads.add(new Utils.Download(remoteFolder + ringtone.getLink(), ringtone.getFile(), null));
+            }
         }
         return downloads;
     }

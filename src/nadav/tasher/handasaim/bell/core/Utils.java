@@ -5,14 +5,17 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import javax.xml.bind.DatatypeConverter;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
 public class Utils {
+    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
     public static String readFile(File file) {
         StringBuilder output = new StringBuilder();
         try {
@@ -26,11 +29,28 @@ public class Utils {
     public static String md5(File file) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(readFile(file).getBytes());
-            return DatatypeConverter.printHexBinary(md.digest()).toUpperCase();
+            byte[] buffer = new byte[8192];
+            int count;
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+            while ((count = bis.read(buffer)) > 0) {
+                md.update(buffer, 0, count);
+            }
+            bis.close();
+            byte[] hash = md.digest();
+            return bytesToHex(hash);
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 
     public static class Download {
