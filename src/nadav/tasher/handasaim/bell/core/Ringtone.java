@@ -4,6 +4,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 
+import static nadav.tasher.handasaim.bell.core.Utils.filter;
+
 public class Ringtone {
     private double time = 0;
     private File file = null;
@@ -51,7 +53,7 @@ public class Ringtone {
     }
 
     public Ringtone setLink(String link) {
-        this.link = link;
+        this.link = filter(link);
         return this;
     }
 }

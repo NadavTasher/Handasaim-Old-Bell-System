@@ -11,12 +11,22 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.security.MessageDigest;
-import java.util.Arrays;
+import java.util.Collections;
 
 public class Utils {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-    public static String readFile(File file) {
+    public static String filter(String input) {
+        input = input.replaceAll("<", "");
+        input = input.replaceAll(">", "");
+        input = input.replaceAll("\\|", "");
+        input = input.replaceAll("\"", "");
+        input = input.replaceAll("\'", "");
+        input = input.replaceAll(";", "");
+        return input;
+    }
+
+    static String readFile(File file) {
         StringBuilder output = new StringBuilder();
         try {
             Files.lines(file.toPath()).forEach(s -> output.append(s).append('\n'));
@@ -26,7 +36,7 @@ public class Utils {
         return output.toString();
     }
 
-    public static String md5(File file) {
+    static String md5(File file) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[8192];
@@ -43,7 +53,7 @@ public class Utils {
         }
     }
 
-    public static String bytesToHex(byte[] bytes) {
+    static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
@@ -53,7 +63,7 @@ public class Utils {
         return new String(hexChars);
     }
 
-    public static class Download {
+    static class Download {
         private String source;
         private File destination;
         private Download.Callback callback;
@@ -66,7 +76,7 @@ public class Utils {
         }
 
         public static OkHttpClient getHttpsClient() {
-            return new OkHttpClient.Builder().connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS)).build();
+            return new OkHttpClient.Builder().connectionSpecs(Collections.singletonList(ConnectionSpec.MODERN_TLS)).build();
         }
 
         public void execute() {

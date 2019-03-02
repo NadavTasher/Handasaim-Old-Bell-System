@@ -3,7 +3,7 @@ package nadav.tasher.handasaim.bell.core;
 import java.util.Calendar;
 
 public class Schedule {
-    public static final int[] ringTimes = {465, 510, 555, 600, 615, 660, 705, 730, 775, 820, 830, 875, 920, 930, 975, 1020, 1065, 1110};
+    private static final int[] ringTimes = {465, 510, 555, 600, 615, 660, 705, 730, 775, 820, 830, 875, 920, 930, 975, 1020, 1065, 1110};
 
     public static int currentRingtone() {
         for (int time=0;time<ringTimes.length;time++){
@@ -12,7 +12,7 @@ public class Schedule {
         return -1;
     }
 
-    public static int minuteOfDay() {
+    private static int minuteOfDay() {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);

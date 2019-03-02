@@ -19,7 +19,15 @@ public class Settings {
     private static JSONObject currentSettings = null;
     private static ArrayList<Ringtone> queue = new ArrayList<>();
 
-    public static void reload() {
+    public static void load() {
+        try {
+            currentSettings = new JSONObject(readFile(localSettings));
+            queue = queueForSettings(currentSettings);
+        } catch (Exception e) {
+        }
+    }
+
+    public static void update() {
         if (localSettings.exists()) {
             load();
         }
@@ -61,14 +69,6 @@ public class Settings {
 
     public static int length() {
         return currentSettings.optInt("length", 25);
-    }
-
-    public static void load() {
-        try {
-            currentSettings = new JSONObject(readFile(localSettings));
-            queue = queueForSettings(currentSettings);
-        } catch (Exception e) {
-        }
     }
 
     private static void downloadRemote() {
