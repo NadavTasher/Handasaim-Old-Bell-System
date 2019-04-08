@@ -71,6 +71,10 @@ public class Settings {
         return currentSettings.optInt("length", 25);
     }
 
+    public static boolean muted() {
+        return currentSettings.optBoolean("mute",false);
+    }
+
     private static void downloadRemote() {
         new Utils.Download(remoteSettings, localSettings, new Utils.Download.Callback() {
             @Override

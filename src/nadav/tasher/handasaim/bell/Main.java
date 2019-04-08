@@ -5,10 +5,11 @@ import nadav.tasher.handasaim.bell.core.Ringtone;
 import nadav.tasher.handasaim.bell.core.Settings;
 
 import static nadav.tasher.handasaim.bell.core.Schedule.currentRingtone;
+import static nadav.tasher.handasaim.bell.core.Settings.muted;
 import static nadav.tasher.handasaim.bell.core.Utils.filter;
 
 public class Main {
-    public static final double VERSION = 0.5;
+    public static final double VERSION = 0.6;
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -23,15 +24,19 @@ public class Main {
                         } catch (Exception ignored) {
                         }
                     }
-                    if (ring != -1) {
-                        Ringtone ringtone = Settings.getRingtone(ring);
-                        String timestamp;
-                        int minute = (int) (ringtone.getTime() / 60);
-                        double seconds = (ringtone.getTime() % 60);
-                        timestamp = "00:" + minute + ":" + seconds;
-                        command = "ffplay -i " + filter(ringtone.getFile().toString()) + " -ss " + timestamp + " -t " + Settings.length() + " -v error -nodisp -autoexit";
+                    if (!muted()) {
+                        if (ring != -1) {
+                            Ringtone ringtone = Settings.getRingtone(ring);
+                            String timestamp;
+                            int minute = (int) (ringtone.getTime() / 60);
+                            double seconds = (ringtone.getTime() % 60);
+                            timestamp = "00:" + minute + ":" + seconds;
+                            command = "ffplay -i " + filter(ringtone.getFile().toString()) + " -ss " + timestamp + " -t " + Settings.length() + " -v error -nodisp -autoexit";
+                        } else {
+                            command = "echo Not The Time Yet";
+                        }
                     } else {
-                        command = "echo Not The Time Yet";
+                        command = "echo Muted!";
                     }
                     System.out.print(command);
                     break;
